@@ -217,30 +217,49 @@ export default function UserModal({ user, isSelfEditByGerente = false, companies
                 </select>
               </div>
 
-              {(formData.role === 'gerente' || formData.role === 'usuario') && companies.length > 0 && (
+              {(formData.role === 'gerente' || formData.role === 'usuario') && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Empresas (visibilidade)
                   </label>
-                  <p className="text-xs text-gray-500 mb-2">
-                    O usuário poderá visualizar e usar apenas as empresas selecionadas (envio de boletos, notas fiscais, etc.).
+                  <p className="text-xs text-gray-500 mb-3">
+                    Marque as empresas que este funcionário pode usar e visualizar nas solicitações
+                    (boletos, notas fiscais, etc.).
                   </p>
-                  <select
-                    multiple
-                    value={formData.companyIds ?? []}
-                    onChange={(e) => {
-                      const selected = Array.from(e.target.selectedOptions, (o) => o.value)
-                      setFormData((prev) => ({ ...prev, companyIds: selected }))
-                    }}
-                    className={`${inputBase} min-h-[100px]`}
-                  >
-                    {companies.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.nome}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-gray-500 mt-1">Segure Ctrl (ou Cmd) para selecionar várias.</p>
+                  {companies.length === 0 ? (
+                    <p className="text-xs text-gray-500 italic">
+                      Nenhuma empresa cadastrada ainda. Crie empresas antes de vincular funcionários.
+                    </p>
+                  ) : (
+                    <div className="max-h-40 overflow-y-auto rounded-xl border border-gray-200 bg-gray-50/60 px-3 py-2 space-y-1.5">
+                      {companies.map((c) => {
+                        const checked = (formData.companyIds ?? []).includes(c.id)
+                        return (
+                          <label
+                            key={c.id}
+                            className="flex items-center gap-2 py-1 px-1 rounded-lg hover:bg-white cursor-pointer text-sm text-gray-700"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                const isChecked = e.target.checked
+                                setFormData((prev) => {
+                                  const current = prev.companyIds ?? []
+                                  const next = isChecked
+                                    ? [...current, c.id]
+                                    : current.filter((id) => id !== c.id)
+                                  return { ...prev, companyIds: next }
+                                })
+                              }}
+                              className="rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                            />
+                            <span>{c.nome}</span>
+                          </label>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 

@@ -124,8 +124,8 @@ export default function UsuariosPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Usuários</h1>
             <p className="text-sm text-gray-500 mt-0.5">
               {canCreateUser
-                ? 'Gerencie os usuários vinculados ao seu perfil (funcionários). Eles veem as mesmas solicitações e empresas que você.'
-                : 'Visualize os usuários vinculados ao seu perfil. Criar, editar e excluir usuários é restrito ao administrador.'}
+                ? 'Cadastre funcionários como tipo \"Usuário\". Eles veem as mesmas empresas e solicitações (boletos e notas fiscais) que este administrador.'
+                : 'Visualize os usuários vinculados a esta conta. Criar, editar e excluir usuários é restrito ao administrador.'}
             </p>
           </div>
         </div>
