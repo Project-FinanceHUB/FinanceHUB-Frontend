@@ -92,16 +92,6 @@ export default function UsuariosPage() {
     }
   }
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Nunca'
-    try {
-      const date = new Date(dateString)
-      return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-    } catch {
-      return 'Nunca'
-    }
-  }
-
   const getRoleLabel = (role: UserRole) => {
     return ROLES.find((r) => r.value === role)?.label || role
   }
@@ -228,10 +218,6 @@ export default function UsuariosPage() {
                       {user.ativo ? 'Ativo' : 'Inativo'}
                     </span>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-500">Último login:</span>
-                  <span className="text-gray-700">{formatDate(user.ultimoLogin)}</span>
                 </div>
               </div>
 
