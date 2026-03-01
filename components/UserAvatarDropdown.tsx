@@ -33,16 +33,12 @@ export default function UserAvatarDropdown({ isOpen, onClose, onOpenPerfil }: Us
 
   const handleLogout = async () => {
     try {
-      await logout()
-      // Limpar qualquer estado persistente relacionado ao login
-      if (typeof window !== 'undefined') {
-        // Limpar sessionStorage também
-        sessionStorage.clear()
-        // Forçar reload para garantir que todos os estados sejam resetados
-        router.push('/')
-        router.refresh()
-      }
       onClose()
+      await logout()
+      if (typeof window !== 'undefined') {
+        sessionStorage.clear()
+        router.replace('/')
+      }
     } catch (error) {
       console.error('Erro ao fazer logout:', error)
     }

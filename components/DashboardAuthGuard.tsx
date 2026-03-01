@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import FullScreenLoading from '@/components/FullScreenLoading'
 
 /**
- * Redireciona para a página de login quando o usuário não está autenticado.
+ * Redireciona para a página inicial quando o usuário não está autenticado.
  * Só redireciona após o carregamento da sessão para evitar flash indevido.
  */
 export default function DashboardAuthGuard({ children }: { children: React.ReactNode }) {
@@ -17,7 +17,7 @@ export default function DashboardAuthGuard({ children }: { children: React.React
     if (typeof window === 'undefined') return
     if (isLoading) return
     if (!token) {
-      router.replace('/?login=true')
+      router.replace('/')
     }
   }, [isLoading, token, router])
 

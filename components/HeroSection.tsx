@@ -166,7 +166,7 @@ export default function HeroSection() {
         setNome('')
         setSignupEmail('')
         setSignupPassword('')
-        router.push('/?login=true&cadastro=sucesso')
+        router.push('/')
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao criar conta. Tente novamente.'
