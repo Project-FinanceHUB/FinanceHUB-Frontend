@@ -143,7 +143,13 @@ function SidebarItem({
   )
   if (href) {
     return (
-      <Link href={href} onClick={onMobileClick} className={baseClass} title={isCollapsed ? label : undefined}>
+      <Link
+        href={href}
+        onClick={onMobileClick}
+        className={baseClass}
+        title={isCollapsed ? label : undefined}
+        scroll={false}
+      >
         {content}
       </Link>
     )

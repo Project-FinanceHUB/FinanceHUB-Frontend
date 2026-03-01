@@ -56,6 +56,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  /** Só limpa sessão quando o erro indica token inválido/expirado (evita desconectar em falha de rede). */
+  const isTokenInvalidError = (err: string | undefined): boolean => {
+    if (!err) return false
+    const lower = err.toLowerCase()
+    return (
+      lower.includes('não autorizado') ||
+      lower.includes('unauthorized') ||
+      lower.includes('token expirado') ||
+      lower.includes('token inválido') ||
+      lower.includes('token não fornecido') ||
+      lower.includes('invalid token') ||
+      lower.includes('sessão expirada') ||
+      lower.includes('sessão inválida') ||
+      lower.includes('401')
+    )
+  }
+
   // Carregar sessão ao iniciar (localStorage ou Supabase)
   useEffect(() => {
     const loadSession = async () => {
@@ -76,6 +93,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(false)
             return
           }
+          if (isTokenInvalidError(validation.error)) {
+            clearSession()
+            return
+          }
         }
 
         // 2) Fallback: token salvo no localStorage (ex.: sessão antiga)
@@ -87,13 +108,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setToken(savedToken)
             setUser(validation.session.user)
             persistSession(savedToken, validation.session.user)
-          } else {
-            clearSession()
+            setIsLoading(false)
+            return
           }
+          if (isTokenInvalidError(validation.error)) {
+            clearSession()
+          } else {
+            // Falha de rede ou backend indisponível: manter sessão para não desconectar o usuário
+            try {
+              const parsed = JSON.parse(savedUser) as User
+              setToken(savedToken)
+              setUser(parsed)
+            } catch {
+              clearSession()
+            }
+          }
+          return
         }
       } catch (error) {
         console.error('Erro ao carregar sessão:', error)
-        clearSession()
+        const savedToken = localStorage.getItem(TOKEN_KEY)
+        const savedUser = localStorage.getItem(USER_KEY)
+        if (savedToken && savedUser) {
+          try {
+            const parsed = JSON.parse(savedUser) as User
+            setToken(savedToken)
+            setUser(parsed)
+          } catch {
+            clearSession()
+          }
+        } else {
+          clearSession()
+        }
       } finally {
         setIsLoading(false)
       }
@@ -147,11 +193,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         persistSession(token, validation.session.user)
         return true
       }
+      if (isTokenInvalidError(validation?.error)) {
+        clearSession()
+      }
     } catch {
-      // ignore
+      // Falha de rede: não limpar sessão para evitar desconexão indevida
     }
-    clearSession()
-    return false
+    return !!token && !!user
   }
 
   const value: AuthContextValue = {

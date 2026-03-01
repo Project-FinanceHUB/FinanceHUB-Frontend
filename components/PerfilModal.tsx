@@ -5,6 +5,7 @@ import { useAuth } from '@/context/AuthContext'
 import { useConfiguracoes } from '@/context/ConfiguracoesContext'
 import { useToast } from '@/context/ToastContext'
 import * as userAPI from '@/lib/api/users'
+import Spinner from '@/components/Spinner'
 
 type PerfilModalProps = {
   isOpen: boolean
@@ -190,9 +191,11 @@ export default function PerfilModal({ isOpen, onClose }: PerfilModalProps) {
 
         <div className="flex-1 overflow-y-auto px-6 pb-6 -mt-4">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-12 gap-3 rounded-2xl bg-gray-50/80">
-              <div className="h-10 w-10 animate-spin rounded-full border-2 border-[var(--primary)] border-t-transparent" />
-              <p className="text-sm text-gray-500">Carregando perfil...</p>
+            <div className="flex flex-col items-center justify-center py-12 gap-5 rounded-2xl bg-gray-50/80">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center shadow-lg shadow-[var(--primary)]/20">
+                <Spinner size="md" className="border-white border-t-transparent" />
+              </div>
+              <p className="text-sm font-medium text-slate-600">Carregando...</p>
             </div>
           ) : (
             <div className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm space-y-5">
@@ -269,7 +272,7 @@ export default function PerfilModal({ isOpen, onClose }: PerfilModalProps) {
           >
             {isSaving ? (
               <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <Spinner size="sm" className="border-white border-t-transparent" />
                 Salvando...
               </>
             ) : (
