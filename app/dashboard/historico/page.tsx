@@ -4,9 +4,11 @@ import { useEffect, useState, useMemo } from 'react'
 import { useAuth } from '@/context/AuthContext'
 import { useDashboard } from '@/context/DashboardContext'
 import SolicitacaoDetalhesModal from '@/components/SolicitacaoDetalhesModal'
+import SolicitacaoModal from '@/components/SolicitacaoModal'
 import ConfirmDeleteModal from '@/components/ConfirmDeleteModal'
 import Spinner from '@/components/Spinner'
-import type { Solicitacao } from '@/types/solicitacao'
+import { useToast } from '@/context/ToastContext'
+import type { Solicitacao, SolicitacaoFormData } from '@/types/solicitacao'
 import type { HistoricoTipo } from '@/types/historico'
 import * as solicitacoesAPI from '@/lib/api/solicitacoes'
 
@@ -105,7 +107,8 @@ function BadgeTipo({ tipo }: { tipo: HistoricoRow['tipo'] }) {
 
 export default function HistoricoPage() {
   const { token } = useAuth()
-  const { solicitacoes, setSolicitacoes } = useDashboard()
+  const { solicitacoes, setSolicitacoes, companies } = useDashboard()
+  const toast = useToast()
 
   const [mounted, setMounted] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -113,6 +116,7 @@ export default function HistoricoPage() {
   const [filtroStatus, setFiltroStatus] = useState<SolicitacaoStatusBackend | 'todos'>('todos')
   const [filtroBusca, setFiltroBusca] = useState('')
   const [solicitacaoDetalhes, setSolicitacaoDetalhes] = useState<Solicitacao | null>(null)
+  const [solicitacaoParaEditar, setSolicitacaoParaEditar] = useState<Solicitacao | null>(null)
   const [pendingDeleteRecord, setPendingDeleteRecord] = useState<HistoricoRow | null>(null)
 
   const registros = useMemo(() => solicitacoes.map(solicitacaoToRow), [solicitacoes])
@@ -163,6 +167,31 @@ export default function HistoricoPage() {
 
   const handleCloseModal = () => {
     setSolicitacaoDetalhes(null)
+  }
+
+  const handleEditar = (r: HistoricoRow) => {
+    if (r.solicitacao && r.status === 'aberto') setSolicitacaoParaEditar(r.solicitacao)
+  }
+
+  const handleCloseEditModal = () => {
+    setSolicitacaoParaEditar(null)
+  }
+
+  const handleSubmitEdit = async (formData: SolicitacaoFormData) => {
+    if (!solicitacaoParaEditar || !token) return
+    try {
+      const updated = await solicitacoesAPI.updateSolicitacao(solicitacaoParaEditar.id, formData, token)
+      setSolicitacoes((prev) =>
+        prev.map((s) => (s.id === updated.id ? { ...s, ...updated } : s))
+      )
+      if (solicitacaoDetalhes?.id === updated.id) setSolicitacaoDetalhes(updated)
+      setSolicitacaoParaEditar(null)
+      toast.success('Solicitação atualizada com sucesso!')
+    } catch (e) {
+      console.error(e)
+      toast.error(e instanceof Error ? e.message : 'Erro ao atualizar solicitação.')
+      throw e
+    }
   }
 
   const inputBase = 'w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm outline-none bg-white focus:ring-2 focus:ring-[var(--primary)]/20 focus:border-[var(--primary)] transition-shadow duration-200'
@@ -389,6 +418,19 @@ export default function HistoricoPage() {
                                 <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
                               </svg>
                             </button>
+                            {r.status === 'aberto' && (
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleEditar(r) }}
+                                className="w-9 h-9 rounded-lg text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 flex items-center justify-center transition-colors duration-200"
+                                title="Editar solicitação"
+                              >
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round" strokeLinejoin="round" />
+                                  <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              </button>
+                            )}
                             <button
                               type="button"
                               onClick={(e) => { e.stopPropagation(); deletingId !== r.id && handleRequestDelete(r) }}
@@ -479,6 +521,19 @@ export default function HistoricoPage() {
                                     <circle cx="12" cy="12" r="3" strokeLinecap="round" strokeLinejoin="round" />
                                   </svg>
                                 </button>
+                                {r.status === 'aberto' && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); handleEditar(r) }}
+                                    className="w-9 h-9 rounded-lg text-slate-400 hover:text-[var(--primary)] hover:bg-[var(--primary)]/10 flex items-center justify-center transition-colors duration-200"
+                                    title="Editar solicitação"
+                                  >
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" strokeLinecap="round" strokeLinejoin="round" />
+                                      <path d="m18.5 2.5 3 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                  </button>
+                                )}
                                 <button
                                   type="button"
                                   onClick={(e) => { e.stopPropagation(); deletingId !== r.id && handleRequestDelete(r) }}
@@ -522,6 +577,15 @@ export default function HistoricoPage() {
         itemDescription={pendingDeleteRecord ? `Solicitação #${pendingDeleteRecord.protocolo} (${pendingDeleteRecord.titulo})` : undefined}
         onClose={() => setPendingDeleteRecord(null)}
         onConfirm={handleConfirmDelete}
+      />
+
+      {/* Modal de edição de solicitação (somente para status aberto) */}
+      <SolicitacaoModal
+        isOpen={!!solicitacaoParaEditar}
+        solicitacao={solicitacaoParaEditar ?? undefined}
+        companies={companies}
+        onClose={handleCloseEditModal}
+        onSubmit={handleSubmitEdit}
       />
     </div>
   )
