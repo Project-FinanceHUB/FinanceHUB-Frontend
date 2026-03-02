@@ -218,7 +218,7 @@ export default function SolicitacaoForm({ solicitacao, companies, onSubmit, onCa
   ]
 
   const hasErrors = Object.keys(errors).length > 0
-  const sol = isEditing ? solicitacao : undefined
+  const sol: Solicitacao | undefined = isEditing ? solicitacao : undefined
   const temBoleto = Boolean(sol?.boletoPath ?? (typeof sol?.boleto === 'string' ? sol.boleto : false))
   const temNotaFiscal = Boolean(sol?.notaFiscalPath ?? (typeof sol?.notaFiscal === 'string' ? sol.notaFiscal : false))
 
