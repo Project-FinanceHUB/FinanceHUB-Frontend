@@ -218,8 +218,9 @@ export default function SolicitacaoForm({ solicitacao, companies, onSubmit, onCa
   ]
 
   const hasErrors = Object.keys(errors).length > 0
-  const temBoleto = isEditing && Boolean(solicitacao?.boletoPath || (solicitacao?.boleto && typeof solicitacao.boleto === 'string'))
-  const temNotaFiscal = isEditing && Boolean(solicitacao?.notaFiscalPath || (solicitacao?.notaFiscal && typeof solicitacao.notaFiscal === 'string'))
+  const sol = isEditing ? solicitacao : undefined
+  const temBoleto = Boolean(sol?.boletoPath ?? (typeof sol?.boleto === 'string' ? sol.boleto : false))
+  const temNotaFiscal = Boolean(sol?.notaFiscalPath ?? (typeof sol?.notaFiscal === 'string' ? sol.notaFiscal : false))
 
   return (
     <form onSubmit={handleSubmit} className={isEditing ? 'flex flex-col bg-white rounded-xl border border-gray-200 shadow-sm min-h-0' : 'space-y-6 bg-white rounded-xl p-6 border border-gray-200 shadow-sm'}>
@@ -645,7 +646,7 @@ export default function SolicitacaoForm({ solicitacao, companies, onSubmit, onCa
           }
         </p>
         <div>
-          {isEditing && (
+          {isEditing && temBoleto && (
             <p className="text-xs text-emerald-700 font-medium mb-2 flex items-center gap-1.5">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -668,7 +669,7 @@ export default function SolicitacaoForm({ solicitacao, companies, onSubmit, onCa
           />
         </div>
         <div>
-          {isEditing && (
+          {isEditing && temNotaFiscal && (
             <p className="text-xs text-emerald-700 font-medium mb-2 flex items-center gap-1.5">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
