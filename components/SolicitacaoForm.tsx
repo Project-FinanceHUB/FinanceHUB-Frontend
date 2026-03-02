@@ -645,7 +645,7 @@ export default function SolicitacaoForm({ solicitacao, companies, onSubmit, onCa
           }
         </p>
         <div>
-          {isEditing && (solicitacao?.boletoPath || solicitacao?.boleto) && (
+          {isEditing && (
             <p className="text-xs text-emerald-700 font-medium mb-2 flex items-center gap-1.5">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -668,7 +668,7 @@ export default function SolicitacaoForm({ solicitacao, companies, onSubmit, onCa
           />
         </div>
         <div>
-          {isEditing && (solicitacao?.notaFiscalPath || solicitacao?.notaFiscal) && (
+          {isEditing && (
             <p className="text-xs text-emerald-700 font-medium mb-2 flex items-center gap-1.5">
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
