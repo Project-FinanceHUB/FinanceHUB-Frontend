@@ -218,7 +218,8 @@ export default function SolicitacaoForm({ solicitacao, companies, onSubmit, onCa
   ]
 
   const hasErrors = Object.keys(errors).length > 0
-  const sol: Solicitacao | undefined = isEditing ? solicitacao : undefined
+  // Garante tipo explícito para evitar "Property 'boletoPath' does not exist on type 'never'" no build
+  const sol = (isEditing ? solicitacao : undefined) as Solicitacao | undefined
   const temBoleto = Boolean(sol?.boletoPath ?? (typeof sol?.boleto === 'string' ? sol.boleto : false))
   const temNotaFiscal = Boolean(sol?.notaFiscalPath ?? (typeof sol?.notaFiscal === 'string' ? sol.notaFiscal : false))
 
