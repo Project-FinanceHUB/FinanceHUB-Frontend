@@ -252,7 +252,7 @@ export default function UserModal({ user, isSelfEditByGerente = false, companies
                                   return { ...prev, companyIds: next }
                                 })
                               }}
-                              className="rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                              className="rounded border-gray-300 accent-blue-600 focus:ring-2 focus:ring-blue-500/30"
                             />
                             <span>{c.nome}</span>
                           </label>
@@ -268,7 +268,7 @@ export default function UserModal({ user, isSelfEditByGerente = false, companies
                   type="checkbox"
                   checked={formData.ativo}
                   onChange={(e) => setFormData((prev) => ({ ...prev, ativo: e.target.checked }))}
-                  className="rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"
+                  className="rounded border-gray-300 accent-blue-600 focus:ring-2 focus:ring-blue-500/30"
                 />
                 <span className="text-sm text-gray-700">Usuário ativo</span>
               </label>

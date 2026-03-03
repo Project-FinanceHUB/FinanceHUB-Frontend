@@ -164,9 +164,11 @@ export function ConfiguracoesProvider({ children }: { children: ReactNode }) {
   const updateUser = useCallback(async (id: string, data: Partial<UserFormData>) => {
     if (!token) throw new Error('Sessão expirada. Faça login novamente.')
     const updatedUser = await userAPI.updateUser(id, data, token)
-    setUsers((prev) => prev.map((u) => (u.id === id ? updatedUser : u)))
+    // Mescla os dados enviados (ex.: companyIds) para o estado persistir os checkboxes após salvar
+    const merged = { ...updatedUser, ...data } as User
+    setUsers((prev) => prev.map((u) => (u.id === id ? merged : u)))
     if (typeof window !== 'undefined') {
-      const updated = users.map((u) => (u.id === id ? updatedUser : u))
+      const updated = users.map((u) => (u.id === id ? merged : u))
       localStorage.setItem(USERS_KEY, JSON.stringify(updated))
     }
   }, [token, users])
